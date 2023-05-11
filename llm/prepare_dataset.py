@@ -1,66 +1,66 @@
-from typing import Dict, Generator, List
-import requests
-import io
 import logging
-import time
-import json
 from pathlib import Path
-from collections import defaultdict
+import json
+from typing import Generator, Callable, Mapping
 
-import pdfplumber
-from pdfplumber.page import Page
+from transformers import AutoTokenizer
+from datasets import DatasetDict, Dataset
 
 import config
 
 
-logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
 
-def extract_pages_as_batches_from_url(url: str, batch_size: int) -> Generator[List[Page], None, None]:
-    LOGGER.info(f'Start extracting pages from {url}')
-    response = requests.get(url)
-    content = io.BytesIO(response.content)
-    pages = pdfplumber.open(content).pages
-    LOGGER.info(f'Finished extracting pages from {url}')
-    return batch_loader(pages, batch_size=batch_size)
-
-
-def batch_loader(pages: List, batch_size: int) -> Generator[List[Page], None, None]:
-    for i in range(0, len(pages), batch_size):
-        yield pages[i:i + batch_size]
-
-
-def extract(url: str, batch_size: int) -> None:
-    """Extract text over selected pages
-
-    Args:
-        url (str): url of the pdf
-        batch_size (int): number of pages to extract at once to avoid memory issues
+def create_datasets(dataset_path: Path, min_length: int, batch_size: int, 
+                   context_length: int, test_size: float, shuffle: bool) -> None:
+    """Prepare dataset for training.
     """
-    batches = extract_pages_as_batches_from_url(url=url, batch_size=batch_size)
-    for batch in batches:
-        # We append text to the existing file with "a" mode (append)
-        with open(config.extraction_path, 'a') as f:
-            for page in batch:
-                if page.page_number >= config.start_page and page.page_number <= config.end_page:
-                    timestamp = time.time()
-                    cropped_page = extract_cropped_page(
-                        page=page,
-                        header_height=config.header_height,
-                        footer_height=config.footer_height
-                    )
-                    dict_page = {page.page_number: cropped_page}
-                    json.dump(dict_page, f)
-                    f.write('\n')
-                    LOGGER.info(f'It took {time.time() - timestamp} seconds to extract page {page.page_number}.')
+    tokenizer =  AutoTokenizer.from_pretrained(config.model_name)
+    LOGGER.info(f'Start preparing dataset from {dataset_path}')
+    texts = import_extracted_text(dataset_path=dataset_path, min_length=min_length)
+    LOGGER.info(f'Finished preparing dataset from {dataset_path}')
+    dataset = Dataset.from_dict({'text': list(texts)})
+    dataset_dict = dataset.train_test_split(test_size=test_size, shuffle=shuffle)
+    tokenized_dataset = dataset_dict.map(tokenize, batched=True, batch_size=batch_size, 
+                                         fn_kwargs={'tokenizer': tokenizer, 'context_length': context_length})
+    pass
 
 
-def extract_cropped_page(page: Page, header_height: int, footer_height: int) -> str:
-    bbox = (0, header_height, page.width, footer_height) # Top-left corner, bottom-right corner
-    cropped_page = page.crop(bbox=bbox)
-    return cropped_page.extract_text()
+def import_extracted_text(dataset_path: Path, min_length: int) -> Generator[str, None, None]:
+    """Prepare dataset for training from the jsonl file.
+    """
+    with open(dataset_path, 'r') as f:
+        for line in f:
+            elt = json.loads(line)
+            text = list(elt.values())[0]
+            if len(text) > min_length:
+                text = process_text(text)
+                yield text
 
 
-if __name__ == "__main__":
-    extract(url=config.url, batch_size=config.batch_size)
+def process_text(text: str) -> str:
+    text = text.replace('\n', ' ')
+    return text
+
+
+def tokenize(element: Mapping, tokenizer: Callable, context_length: int) -> str:
+    inputs = tokenizer(element['text'], truncation=True, return_overflowing_tokens=True, 
+                               return_length=True, max_length=context_length, return_tensors='pt')
+    inputs_batch = []
+    for length, input_ids in zip(inputs['length'], inputs['input_ids']):
+        if length == context_length: # We drop the last input_ids that are shorter than max_length
+            inputs_batch.append(input_ids)
+    return {'input_ids': inputs_batch}
+
+
+if __name__ == '__main__':
+
+    create_datasets(
+        dataset_path=config.extraction_path, 
+        min_length=config.min_length,
+        batch_size=config.batch_size,
+        context_length=config.context_length,
+        test_size=config.test_size,
+        shuffle=config.shuffle
+    )

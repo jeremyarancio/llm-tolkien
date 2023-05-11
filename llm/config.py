@@ -10,4 +10,13 @@ footer_height = 540 # Remove footer
 start_page = 45
 end_page = 1055
 extraction_path = REPO_DIR / "llm/data/extracted_text.jsonl"
-batch_size = 300
+
+# Text processing
+min_length = 100
+
+# LLM
+model_name = 'bigscience/bloom-3b'
+context_length = 128
+batch_size = 1000
+test_size = 0.1
+shuffle = True
