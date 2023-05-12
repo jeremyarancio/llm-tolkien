@@ -13,6 +13,7 @@ extraction_path = REPO_DIR / "llm/data/extracted_text.jsonl"
 
 # Text processing
 min_length = 100
+num_grouped_pages = 10
 
 # LLM
 model_name = 'bigscience/bloom-3b'
