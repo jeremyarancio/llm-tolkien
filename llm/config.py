@@ -15,9 +15,34 @@ extraction_path = REPO_DIR / "llm/data/extracted_text.jsonl"
 min_length = 100
 num_grouped_pages = 10
 
-# LLM
-model_name = 'bigscience/bloom-3b'
+# HF repo
+hf_repo = "llm-tolkien"
+
+# Dataset
 context_length = 128
 batch_size = 1000
 test_size = 0.1
 shuffle = True
+
+# Training
+model_name = 'bigscience/bloom-3b'
+lora_r = 16 # attention heads
+lora_alpha = 32 # alpha scaling
+lora_dropout = 0.05
+lora_bias = "none"
+lora_task_type = "CAUSAL_LM" # set this for CLM or Seq2Seq
+
+## Trainer config
+per_device_train_batch_size = 4, 
+gradient_accumulation_steps = 4,
+warmup_steps = 100, 
+max_steps = 200, 
+learning_rate = 2e-4, 
+fp16 = True,
+logging_steps = 1, 
+output_dir = REPO_DIR / 'llm/training_outputs'
+
+## Data collator
+mlm =False
+
+
