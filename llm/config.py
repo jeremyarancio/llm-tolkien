@@ -16,7 +16,7 @@ min_length = 100
 num_grouped_pages = 10
 
 # HF repo
-hf_repo = "llm-tolkien"
+hf_repo = "JeremyArancio/llm-tolkien"
 
 # Dataset
 context_length = 128
@@ -36,12 +36,16 @@ lora_task_type = "CAUSAL_LM" # set this for CLM or Seq2Seq
 per_device_train_batch_size = 4 
 gradient_accumulation_steps = 4 # Equivalent of doing a batch of 16
 warmup_steps = 100 
-num_train_epochs=1
+num_train_epochs=3
 weight_decay=0.1
 learning_rate = 2e-4 
 fp16 = True
-logging_steps = 1 
+logging_steps = 1
+overwrite_output_dir = True
 output_dir = REPO_DIR / 'llm/training_outputs'
+evaluation_strategy = "epoch"
+save_strategy = "epoch"
+push_to_hub = True
 
 ## Data collator
 mlm =False
@@ -50,5 +54,3 @@ mlm =False
 max_new_tokens = 50
 temperature = 0.5
 do_sample = False
-
-

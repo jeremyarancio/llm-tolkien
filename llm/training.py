@@ -12,7 +12,6 @@ import config
 from training_utils import prepare_model, print_trainable_parameters
 
 
-HUGGINGFACE_TOKEN = os.getenv("HUGGINGFACE_TOKEN")
 LOGGER = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
@@ -35,7 +34,7 @@ class LLMTolkien():
         model = prepare_model(model)
         model = get_peft_model(model, LoraConfig(**lora_config))
         LOGGER.info(f"Model trainable parameters:\n {print_trainable_parameters(model)}")
-        dataset = load_dataset(hf_repo, use_auth_token=HUGGINGFACE_TOKEN)
+        dataset = load_dataset(hf_repo)
         LOGGER.info(f"Train dataset downloaded:\n {dataset['train']}")
         LOGGER.info(f"Number of tokens for the training: {dataset['train'].num_rows*len(dataset['train']['input_ids'][0])}")
         trainer = Trainer(
@@ -43,12 +42,12 @@ class LLMTolkien():
             train_dataset=dataset['train'],
             eval_dataset=dataset['test'],
             args=TrainingArguments(**trainer_config),
-            data_collator=DataCollatorForLanguageModeling(tokenizer, mlm=mlm),
+            data_collator=DataCollatorForLanguageModeling(tokenizer, mlm=mlm)
         )
         model.config.use_cache = False  # silence warnings
         trainer.train()
         model.config.use_cache = True
-        model.push_to_hub(hf_repo, token=HUGGINGFACE_TOKEN, private=True)
+        trainer.push_to_hub(commit_message="Training finished.")
 
     def evaluate():
         pass
@@ -75,23 +74,27 @@ class LLMTolkien():
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Train an LLM with Lora.")
-    parser.add_argument("--model_name", type=str, default=config.model_name, help="The name of the model to train.")
-    parser.add_argument("--hf_repo", type=str, default=config.hf_repo, help="The name of the HuggingFace repo to push the model to.")
+    parser.add_argument("--model-name", type=str, default=config.model_name, help="The name of the model to train.")
+    parser.add_argument("--hf-repo", type=str, default=config.hf_repo, help="The name of the HuggingFace repo to push the model to.")
     parser.add_argument("--mlm", type=bool, default=config.mlm, help="Whether to use MLM or not for the training.")
-    parser.add_argument('--lora_r', type=float, default=config.lora_r, help="The Lora parameter r, the number of heads.")
-    parser.add_argument('--lora_alpha', type=float, default=config.lora_alpha, help="Lora parameter.")
-    parser.add_argument('--lora_dropout', type=float, default=config.lora_dropout, help="Lora dropout.")
-    parser.add_argument('--lora_bias', type=str, default=config.lora_bias, help="Lora bias.")
-    parser.add_argument('--lora_task_type', type=str, default=config.lora_task_type, help="Lora task type.")
-    parser.add_argument('--per_device_train_batch_size', type=int, default=config.per_device_train_batch_size, help="The batch size per device for the training.")
-    parser.add_argument('--gradient_accumulation_steps', type=int, default=config.gradient_accumulation_steps, help="The number of gradient accumulation steps.")
-    parser.add_argument('--warmup_steps', type=int, default=config.warmup_steps, help="The number of warmup steps.")
-    parser.add_argument('--weight_decay', type=float, default=config.weight_decay, help="The weight decay.")
-    parser.add_argument('--num_train_epochs', type=int, default=config.num_train_epochs, help="The number of training epochs.")
-    parser.add_argument('--learning_rate', type=float, default=config.learning_rate, help="The learning rate.")
+    parser.add_argument('--lora-r', type=float, default=config.lora_r, help="The Lora parameter r, the number of heads.")
+    parser.add_argument('--lora-alpha', type=float, default=config.lora_alpha, help="Lora parameter.")
+    parser.add_argument('--lora-dropout', type=float, default=config.lora_dropout, help="Lora dropout.")
+    parser.add_argument('--lora-bias', type=str, default=config.lora_bias, help="Lora bias.")
+    parser.add_argument('--lora-task-type', type=str, default=config.lora_task_type, help="Lora task type.")
+    parser.add_argument('--per-device-train-batch-size', type=int, default=config.per_device_train_batch_size, help="The batch size per device for the training.")
+    parser.add_argument('--gradient-accumulation-steps', type=int, default=config.gradient_accumulation_steps, help="The number of gradient accumulation steps.")
+    parser.add_argument('--warmup-steps', type=int, default=config.warmup_steps, help="The number of warmup steps.")
+    parser.add_argument('--weight-decay', type=float, default=config.weight_decay, help="The weight decay.")
+    parser.add_argument('--num-train-epochs', type=int, default=config.num_train_epochs, help="The number of training epochs.")
+    parser.add_argument('--learning-rate', type=float, default=config.learning_rate, help="The learning rate.")
     parser.add_argument('--fp16', type=bool, default=config.fp16, help="Whether to use fp16 or not.")
-    parser.add_argument('--logging_steps', type=int, default=config.logging_steps, help="The number of logging steps.")
-    parser.add_argument('--output_dir', type=str, default=config.output_dir, help="The output directory.")
+    parser.add_argument('--logging-steps', type=int, default=config.logging_steps, help="The number of logging steps.")
+    parser.add_argument('--output-dir', type=str, default=config.output_dir, help="The output directory.")
+    parser.add_argument('--overwrite-output_dir', type=bool, default=config.overwrite_output_dir, help="Whether to overwrite the output directory.")
+    parser.add_argument('--save-strategy', type=str, default=config.save_strategy, help="The saving strategy.")
+    parser.add_argument('--evaluation-strategy', type=str, default=config.evaluation_strategy, help="The evaluation strategy.")
+    parser.add_argument('--push-to-hub', type=bool, default=config.push_to_hub, help="Whether to push the model to the HuggingFace Hub.")
     args = parser.parse_args()
 
 
@@ -113,6 +116,10 @@ if __name__ == "__main__":
         "fp16": args.fp16,
         "logging_steps": args.logging_steps, 
         "output_dir": args.output_dir,
+        "overwrite_output_dir": args.overwrite_output_dir,
+        "evaluation_strategy": args.evaluation_strategy,
+        "save_strategy": args.save_strategy,
+        "push_to_hub": args.push_to_hub,
     }
 
     model = LLMTolkien(args.model_name)
@@ -120,5 +127,5 @@ if __name__ == "__main__":
         hf_repo=args.hf_repo,
         lora_config=lora_config,
         trainer_config=trainer_config,
-        mlm=args.mlm,
+        mlm=args.mlm
     )
