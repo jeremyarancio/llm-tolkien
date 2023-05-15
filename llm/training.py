@@ -120,6 +120,7 @@ if __name__ == "__main__":
         "evaluation_strategy": args.evaluation_strategy,
         "save_strategy": args.save_strategy,
         "push_to_hub": args.push_to_hub,
+        "hub_model_id": args.hf_repo
     }
 
     model = LLMTolkien(args.model_name)
