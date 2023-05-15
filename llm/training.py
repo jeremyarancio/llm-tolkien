@@ -115,10 +115,10 @@ if __name__ == "__main__":
         "output_dir": args.output_dir,
     }
 
-    model = LLMTolkien(config.model_name)
+    model = LLMTolkien(args.model_name)
     model.train(
-        hf_repo=config.hf_repo,
+        hf_repo=args.hf_repo,
         lora_config=lora_config,
         trainer_config=trainer_config,
-        mlm=config.mlm,
+        mlm=args.mlm,
     )
