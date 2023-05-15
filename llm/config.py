@@ -33,16 +33,22 @@ lora_bias = "none"
 lora_task_type = "CAUSAL_LM" # set this for CLM or Seq2Seq
 
 ## Trainer config
-per_device_train_batch_size = 4, 
-gradient_accumulation_steps = 4,
-warmup_steps = 100, 
-max_steps = 200, 
-learning_rate = 2e-4, 
-fp16 = True,
-logging_steps = 1, 
+per_device_train_batch_size = 4 
+gradient_accumulation_steps = 4 # Equivalent of doing a batch of 16
+warmup_steps = 100 
+num_train_epochs=1
+weight_decay=0.1
+learning_rate = 2e-4 
+fp16 = True
+logging_steps = 1 
 output_dir = REPO_DIR / 'llm/training_outputs'
 
 ## Data collator
 mlm =False
+
+## Generate
+max_new_tokens = 50
+temperature = 0.5
+do_sample = False
 
 
