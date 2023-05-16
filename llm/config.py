@@ -42,10 +42,9 @@ learning_rate = 2e-4
 fp16 = True
 logging_steps = 1
 overwrite_output_dir = True
-output_dir = REPO_DIR / 'llm/training_outputs'
 evaluation_strategy = "epoch"
-save_strategy = "epoch"
-push_to_hub = True
+save_strategy = "no"
+push_to_hub = False
 
 ## Data collator
 mlm =False

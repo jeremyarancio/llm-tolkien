@@ -47,7 +47,8 @@ class LLMTolkien():
         model.config.use_cache = False  # silence warnings
         trainer.train()
         model.config.use_cache = True
-        trainer.push_to_hub(commit_message="Training finished.")
+        model.push_to_hub(repo_id=hf_repo)
+        tokenizer.push_to_hub(repo_id=hf_repo)
 
     def evaluate():
         pass
@@ -86,11 +87,11 @@ if __name__ == "__main__":
     parser.add_argument('--gradient-accumulation-steps', type=int, default=config.gradient_accumulation_steps, help="The number of gradient accumulation steps.")
     parser.add_argument('--warmup-steps', type=int, default=config.warmup_steps, help="The number of warmup steps.")
     parser.add_argument('--weight-decay', type=float, default=config.weight_decay, help="The weight decay.")
-    parser.add_argument('--num-train-epochs', type=int, default=config.num_train_epochs, help="The number of training epochs.")
+    parser.add_argument('--num-train-epochs', type=float, default=config.num_train_epochs, help="The number of training epochs.")
     parser.add_argument('--learning-rate', type=float, default=config.learning_rate, help="The learning rate.")
     parser.add_argument('--fp16', type=bool, default=config.fp16, help="Whether to use fp16 or not.")
     parser.add_argument('--logging-steps', type=int, default=config.logging_steps, help="The number of logging steps.")
-    parser.add_argument('--output-dir', type=str, default=config.output_dir, help="The output directory.")
+    parser.add_argument('--output-dir', type=str, default=config.hf_repo, help="The output directory.")
     parser.add_argument('--overwrite-output_dir', type=bool, default=config.overwrite_output_dir, help="Whether to overwrite the output directory.")
     parser.add_argument('--save-strategy', type=str, default=config.save_strategy, help="The saving strategy.")
     parser.add_argument('--evaluation-strategy', type=str, default=config.evaluation_strategy, help="The evaluation strategy.")
@@ -119,8 +120,7 @@ if __name__ == "__main__":
         "overwrite_output_dir": args.overwrite_output_dir,
         "evaluation_strategy": args.evaluation_strategy,
         "save_strategy": args.save_strategy,
-        "push_to_hub": args.push_to_hub,
-        "hub_model_id": args.hf_repo
+        "push_to_hub": args.push_to_hub
     }
 
     model = LLMTolkien(args.model_name)
