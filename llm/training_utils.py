@@ -33,6 +33,7 @@ def print_trainable_parameters(model):
 
 
 def compute_perplexity(pred):
-    loss = pred.losses.mean()
-    perplexity = exp(loss)
-    return {"perplexity": perplexity}
+    pass
+    # loss = pred.losses.mean()
+    # perplexity = exp(loss)
+    # return {"perplexity": perplexity}

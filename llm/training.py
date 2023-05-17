@@ -42,8 +42,7 @@ class LLMTolkien():
             train_dataset=dataset['train'],
             eval_dataset=dataset['test'],
             args=TrainingArguments(**trainer_config),
-            data_collator=DataCollatorForLanguageModeling(tokenizer, mlm=mlm),
-            compute_metrics=compute_perplexity
+            data_collator=DataCollatorForLanguageModeling(tokenizer, mlm=mlm)
         )
         model.config.use_cache = False  # silence warnings
         trainer.train()
