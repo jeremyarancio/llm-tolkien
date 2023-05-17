@@ -1,6 +1,5 @@
 
-from torch import float32
-from torch import nn
+from torch import float32, nn, exp
 
 
 class CastOutputToFloat(nn.Sequential):
@@ -32,3 +31,8 @@ def print_trainable_parameters(model):
             trainable_params += param.numel()
     return f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
 
+
+def compute_perplexity(pred):
+    loss = pred.losses.mean()
+    perplexity = exp(loss)
+    return {"perplexity": perplexity}
