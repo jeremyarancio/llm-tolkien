@@ -22,6 +22,8 @@ def prepare_dataset(dataset_path: Path, min_length: int, context_length: int,
     texts = preprocess_data(dataset_path=dataset_path, min_length=min_length, 
                             num_grouped_pages=num_grouped_pages, tokenizer=tokenizer)
     dataset = Dataset.from_dict({'text': list(texts)})
+    # We push the extracted book publicly
+    dataset.push_to_hub("JeremyArancio/lotr-book")
     dataset_dict = dataset.train_test_split(test_size=test_size, shuffle=shuffle)
     LOGGER.info(f'The dataset is composed  of {dataset_dict.num_rows} pages.')
     tokenized_dataset = dataset_dict.map(tokenize, batched=True, fn_kwargs={'tokenizer': tokenizer, 'context_length': context_length},
