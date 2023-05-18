@@ -6,7 +6,7 @@ from typing import Generator, Callable, Mapping, List
 from datasets import Dataset
 from transformers import AutoTokenizer, PreTrainedTokenizer
 
-import config
+from llm import config
 
 
 LOGGER = logging.getLogger(__name__)
