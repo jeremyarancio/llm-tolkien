@@ -13,13 +13,12 @@ extraction_path = REPO_DIR / "llm/data/extracted_text.jsonl"
 
 # Text processing
 min_length = 100
-num_grouped_pages = 10
 
 # HF repo
 hf_repo = "JeremyArancio/llm-tolkien"
 
 # Dataset
-context_length = 128
+context_length = 2048
 batch_size = 1000
 test_size = 0.1
 shuffle = True
