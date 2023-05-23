@@ -32,8 +32,8 @@ lora_bias = "none"
 lora_task_type = "CAUSAL_LM" # set this for CLM or Seq2Seq
 
 ## Trainer config
-per_device_train_batch_size = 4 
-gradient_accumulation_steps = 4 # Equivalent of doing a batch of 16
+per_device_train_batch_size = 1 
+gradient_accumulation_steps = 1
 warmup_steps = 100 
 num_train_epochs=3
 weight_decay=0.1
@@ -41,7 +41,7 @@ learning_rate = 2e-4
 fp16 = True
 logging_steps = 1
 overwrite_output_dir = True
-evaluation_strategy = "epoch"
+evaluation_strategy = "no"
 save_strategy = "no"
 push_to_hub = False
 

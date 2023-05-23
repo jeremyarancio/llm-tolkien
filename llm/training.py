@@ -8,8 +8,8 @@ from datasets import load_dataset
 from peft import LoraConfig, PeftModel, PeftConfig, get_peft_model
 from transformers import AutoModelForCausalLM, AutoTokenizer, Trainer, TrainingArguments, DataCollatorForLanguageModeling
 
-from llm import config
-from llm.training_utils import prepare_model, print_trainable_parameters, compute_perplexity
+import config
+from training_utils import prepare_model, print_trainable_parameters, compute_perplexity
 
 
 LOGGER = logging.getLogger(__name__)
@@ -40,7 +40,6 @@ class LLMTolkien():
         trainer = Trainer(
             model=model,
             train_dataset=dataset['train'],
-            eval_dataset=dataset['test'],
             args=TrainingArguments(**trainer_config),
             data_collator=DataCollatorForLanguageModeling(tokenizer, mlm=mlm)
         )
