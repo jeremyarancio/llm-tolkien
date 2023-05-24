@@ -13,7 +13,7 @@ This LLM is fine-tuned on [Bloom-3B](https://huggingface.co/bigscience/bloom-3b)
 
 The article: [Fine-tune an LLM on your personal data: create a “The Lord of the Rings” storyteller.](https://medium.com/@jeremyarancio/fine-tune-an-llm-on-your-personal-data-create-a-the-lord-of-the-rings-storyteller-6826dd614fa9)
 
-The Hugging Face model repository: [JeremyArancio/llm-tolkien](https://huggingface.co/JeremyArancio/llm-tolkien/edit/main/README.md)
+The Hugging Face model card: [JeremyArancio/llm-tolkien](https://huggingface.co/JeremyArancio/llm-tolkien)
 
 # Load the model
 
