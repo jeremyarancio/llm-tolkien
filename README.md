@@ -26,7 +26,7 @@ config = PeftConfig.from_pretrained("JeremyArancio/llm-tolkien")
 model = AutoModelForCausalLM.from_pretrained(config.base_model_name_or_path, return_dict=True, load_in_8bit=True, device_map='auto')
 tokenizer = AutoTokenizer.from_pretrained(config.base_model_name_or_path)
 # Load the Lora model
-model = PeftModel.from_pretrained(model, hf_repo)
+model = PeftModel.from_pretrained(model, "JeremyArancio/llm-tolkien")
 ```
 
 # Run the model
