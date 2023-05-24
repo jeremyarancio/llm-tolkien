@@ -13,8 +13,6 @@ This LLM is fine-tuned on [Bloom-3B](https://huggingface.co/bigscience/bloom-3b)
 
 The article: [Fine-tune an LLM on your personal data: create a “The Lord of the Rings” storyteller.](https://medium.com/@jeremyarancio/fine-tune-an-llm-on-your-personal-data-create-a-the-lord-of-the-rings-storyteller-6826dd614fa9)
 
-[Github repository](https://github.com/jeremyarancio/llm-rpg/tree/main)
-
 # Load the model
 
 ```python
