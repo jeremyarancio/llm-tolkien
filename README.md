@@ -4,7 +4,7 @@
 *Version 1.1 / 23 May 2023*
 
 <p align="center">
-  <img src="images/sauron.jpg" />
+  <img src="images/sauron.jpg" width=500 />
 </p>
 
 # Description
@@ -14,6 +14,12 @@ This LLM is fine-tuned on [Bloom-3B](https://huggingface.co/bigscience/bloom-3b)
 The article: [Fine-tune an LLM on your personal data: create a “The Lord of the Rings” storyteller.](https://medium.com/@jeremyarancio/fine-tune-an-llm-on-your-personal-data-create-a-the-lord-of-the-rings-storyteller-6826dd614fa9)
 
 The Hugging Face model card: [JeremyArancio/llm-tolkien](https://huggingface.co/JeremyArancio/llm-tolkien)
+
+The model is deployed on Inference Endpoints from Hugging Face, and the applicaiton is built and deployed on Streamlit.
+
+<p align="center">
+  <img src="images/LLM.PNG" width=800/>
+</p>
 
 # Load the model
 
